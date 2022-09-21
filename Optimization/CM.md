@@ -73,4 +73,22 @@ pb :
 
 #### Powell's method
 
-- **The algorithm**:
+- **The algorithm**: cf [Wikipedia](https://en.wikipedia.org/wiki/Powell%27s_method) and poly
+
+## Deterministic/stochastic global optimization
+
+### DIVIDING RECTANGLES
+
+- good for explore. But slow at convergence
+
+partitioning mechanism
+
+Better spilt horizontally.
+
+### BASIN HOPPING
+
+- work well with a function with many local optima (many spikes)
+
+1. Hopping
+2. Local search
+3. Acceptance/rejection of the new solution
