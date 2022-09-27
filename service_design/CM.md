@@ -42,3 +42,7 @@ There is no performance problem in the world that can't be solved by removing a 
 - internet is a middleware he create the protocol to communicate with services
 
 ## Definition of a Web service (cf cours or Wikipedia)
+
+## CM 3
+
+Putain xml c'est chiant et json c'est mieux
