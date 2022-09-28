@@ -92,3 +92,19 @@ Better spilt horizontally.
 1. Hopping
 2. Local search
 3. Acceptance/rejection of the new solution
+
+## Derivative-based optimization
+
+### GRADIENT DESCENT
+
+1. first technique
+   $\alpha$ is the step size (ex: page 8)
+   with this technique, when you find a local optimum of convex function, you are sure to find the global optimum
+
+page 11 the convex fonction can be flat
+
+### 2ND ORDER METHODS - CURVATURE INFORMATION
+
+#### NEWTON METHOD
+
+best BFGS
