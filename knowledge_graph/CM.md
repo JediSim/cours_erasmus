@@ -20,3 +20,8 @@ Knowledge layer is the schema of the db.
 ### Ontology
 
 - **ontology**: a formal specification of a shared conceptualization
+
+## Reuse Problem
+
+repository: like git hub. Just a place ton put data
+catalogues: makes data searchable
