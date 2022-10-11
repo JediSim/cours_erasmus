@@ -46,3 +46,7 @@ There is no performance problem in the world that can't be solved by removing a 
 ## CM 3
 
 Putain xml c'est chiant et json c'est mieux
+
+## SOAP/WSDL web services
+
+- SOAP: Simple Object Access Protocol
