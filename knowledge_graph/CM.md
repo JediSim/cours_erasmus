@@ -25,3 +25,7 @@ Knowledge layer is the schema of the db.
 
 repository: like git hub. Just a place ton put data
 catalogues: makes data searchable
+
+## iTelos - A KGE Methodology
+
+methodology defined to reduce effort of the dev, provide support to the user, produces reusable resources
