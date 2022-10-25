@@ -1,3 +1,4 @@
 knowledge_graph/data
 knowledge_graph/project/graphdb-data
 .env
+service_design/lab3/*.iso
