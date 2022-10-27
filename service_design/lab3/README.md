@@ -4,6 +4,10 @@
 
 # VM
 
+## Virt-manager
+
+modify the boot mod to uefi
+
 ## keyboard
 
 ### azerty
