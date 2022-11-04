@@ -3,3 +3,4 @@ knowledge_graph/project/graphdb-data
 .env
 service_design/lab3/*.iso
 service_design/lab3/*.qcow2
+service_design/lab3/*.ova
