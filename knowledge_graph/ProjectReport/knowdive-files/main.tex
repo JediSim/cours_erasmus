@@ -1,0 +1,87 @@
+\documentclass{knowdive}
+\usepackage{color,soul}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{textcomp}
+\usepackage{lscape}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\usepackage{rotating}
+\graphicspath{ {images/} }
+
+\usepackage{titlesec}
+\titleformat{\section}{\LARGE\bfseries}{\thesection}{1em}{}
+
+\usepackage{array, makecell}
+%\hypersetup{
+	%pdfauthor={Author1, \and Author2},
+	%pdftitle={Collectives.State of the Art},
+       %pdfkeywords = {},
+      %pdfsubject={}
+      %}
+%\usepackage{hyperref}
+
+
+\graphicspath{ {images/} }
+\usepackage{comment}
+
+\title{KGE 2022 - Project Report Template}
+
+\author{Author1, ..., AuthorN}
+
+\revisionhistory{
+    \revision{0.1}{20.04.2020}{Fausto Giunchiglia}{Document created}
+}
+\newpage
+
+\fancypagestyle{plain}{
+  \fancyhf{}% Clear header/footer
+  %\fancyhead[R]{\includegraphics[width=1.0\linewidth,height=5pt]{Knowdive_color_bar}}% Right header
+  \fancyfoot[L]{\includegraphics[width=1.0\linewidth,height=45pt]{Knowdive_color_bar}}% Left footer
+  \fancyfoot[C]{Page \thepage\  / \pageref{LastPage}}
+}
+
+\pagestyle{plain}
+%\makeglossaries
+%input{glossaries}
+\begin{document}
+\maketitle
+\begin{sloppypar}
+\large
+\begin{spacing}{1.05}
+%\gls{latex}
+%\gls{batex}
+%\gls{eType}
+%\printglossary
+
+\section{Introduction}
+\input{ProjectReport/section/0-introduction}
+\section{Purpose and Domain of Interest (DoI)}
+\input{ProjectReport/section/1-purpose-doi.tex}
+\section{Data Sources}
+\input{ProjectReport/section/2-resources.tex}
+\section{Purpose Formalization}
+\input{ProjectReport/section/3-purposeFormaliation.tex}
+\section{Inception}
+\input{ProjectReport/section/4-inception.tex}
+\section{Informal Modeling}
+\input{ProjectReport/section/5-informalModeling.tex}
+\section{Formal Modeling}
+\input{ProjectReport/section/6-formalModeling.tex}
+\section{KGC}
+\input{ProjectReport/section/7-dataIntegration.tex}
+\section{Outcome Exploitation}
+\input{ProjectReport/section/8-exploitation.tex}
+\section{Conclusions \& Open Issues}
+\input{ProjectReport/section/9-openIssues.tex}
+
+\end{spacing}
+\end{sloppypar}
+\end{document} 
