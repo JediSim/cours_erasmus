@@ -6,6 +6,8 @@ import akka.actor.ActorSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
@@ -32,9 +34,20 @@ public class Main {
 
         group.add(system.actorOf(Node.props(id), "node" + id));
         group.get(1).tell(new Node.JoinSys(group.get(2),id), ActorRef.noSender()); // get(1) to keep it in the test list
-        id++;
+//        id++;
 
         wait.wait(2000);
+
+        group.get(1).tell(new Node.Update('A', 1), ActorRef.noSender());
+
+        wait.wait(2000);
+
+        group.get(0).tell(new Node.Update('Z', 1), ActorRef.noSender());
+
+        wait.wait(2000);
+
+        group.get(2).tell(new Node.Update('A', 2), ActorRef.noSender());
+
 
         //------------------TESTING------------------
 
@@ -43,6 +56,13 @@ public class Main {
         for (ActorRef peer: group) {
             peer.tell(new Node.PrintGroup(), ActorRef.noSender());
         }
+
+        wait.wait(2000);
+
+        for (ActorRef peer: group) {
+            peer.tell(new Node.PrintData(), ActorRef.noSender());
+        }
+        System.out.println((int)'Z');
 
         system.terminate();
     }

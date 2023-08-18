@@ -3,16 +3,23 @@ package it.unitn.ds1;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import scala.Int;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Node extends AbstractActor {
 
     private final int id;         // ID of the current actor
     private List<ActorRef> group;
+
+    private List<Pair> data = new ArrayList<>();
+
+    private Integer N = 1; // number of replicas
 
     public Node(int id) {
         this.group = new ArrayList<>();
@@ -53,13 +60,34 @@ public class Node extends AbstractActor {
         }
     }
 
+    public static class Update implements Serializable {
+
+        private final Pair newData;
+
+        public Update(Character key, Integer value) {
+            this.newData = new Pair(key, value);
+        }
+    }
+
+    public static class UpdateReplica implements Serializable {
+
+        private final Pair newData;
+
+        public UpdateReplica(Pair newData) {
+            this.newData = newData;
+        }
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(JoinSys.class,    this::onJoinSys)
                 .match(NewMember.class, this::onNewMember)
                 .match(UpdateMemberList.class, this::onUpdateMemberList)
+                .match(Update.class, this::onUpdate)
+                .match(UpdateReplica.class, this::onUpdateReplica)
                 .match(PrintGroup.class, this::onPrintGroup)
+                .match(PrintData.class, this::onPrintData)
                 .build();
     }
 
@@ -97,6 +125,55 @@ public class Node extends AbstractActor {
 //        System.out.println("Node " + this.id + " group: " + this.group);
     }
 
+    private void onUpdate(Update msg) {
+        Double i = (26.0/this.group.size()*this.id) + 65;
+        Double j = (26.0/this.group.size()*(this.id+1) + 65);
+        System.out.println("Node " + this.id + " received update request for key " + msg.newData.getKey() + " i : " + i + " j : " + j);
+        List<ActorRef> nNext = this.getNNext();
+        if ((int)msg.newData.getKey() >= i && (int)msg.newData.getKey() < j) {
+            if (this.data.contains(msg.newData)) {
+                this.data.set(this.data.indexOf(msg.newData), msg.newData);
+            }else {
+                this.data.add(msg.newData);
+            }
+            for (ActorRef node : nNext) {
+                node.tell(new UpdateReplica(msg.newData), ActorRef.noSender());
+            }
+        }else{
+            nNext.get(0).tell(new Update(msg.newData.getKey(), msg.newData.getValue()), ActorRef.noSender());
+        }
+    }
+
+    private void onUpdateReplica(UpdateReplica msg) {
+        if (this.data.contains(msg.newData)) {
+            this.data.set(this.data.indexOf(msg.newData), msg.newData);
+        }else {
+            this.data.add(msg.newData);
+        }
+    }
+
+    private List<ActorRef> getNNext() {
+        List<ActorRef> nNext = new ArrayList<>();
+        Integer i = 1;
+        Integer n = this.group.size();
+        Integer j;
+        Pattern p;
+        Matcher m;
+        for (ActorRef node : this.group) {
+            j = (this.id + i) % n;
+            p = Pattern.compile(".*node"+j+".*");
+            m = p.matcher(node.toString());
+            if (m.find()){
+                nNext.add(node);
+                if (i == this.N){
+                    return nNext;
+                }
+                i++;
+            }
+        }
+        return nNext;
+    }
+
     //----------------------------------------------------------testing----------------------------------------------------------
 
     public static class PrintGroup implements Serializable {
@@ -105,6 +182,14 @@ public class Node extends AbstractActor {
 
     private void onPrintGroup(PrintGroup msg) {
         System.out.println("Node " + this.id + " group: " + this.group);
+    }
+
+    public static class PrintData implements Serializable {
+        public PrintData() {}
+    }
+
+    private void onPrintData(PrintData msg) {
+        System.out.println("Node " + this.id + " data: " + this.data);
     }
 
 }
