@@ -32,9 +32,6 @@ public class Main {
 
         wait.wait(2000);
 
-        group.add(system.actorOf(Node.props(id), "node" + id));
-        group.get(1).tell(new Node.JoinSys(group.get(2),id), ActorRef.noSender()); // get(1) to keep it in the test list
-//        id++;
 
         wait.wait(2000);
 
@@ -42,12 +39,32 @@ public class Main {
 
         wait.wait(2000);
 
-        group.get(0).tell(new Node.Update('Z', 1), ActorRef.noSender());
+        group.get(0).tell(new Node.Update('Q', 1), ActorRef.noSender());
+        group.get(0).tell(new Node.Update('V', 2), ActorRef.noSender());
+        group.get(0).tell(new Node.Update('D', 2), ActorRef.noSender());
+        group.get(0).tell(new Node.Update('I', 2), ActorRef.noSender());
+        group.get(0).tell(new Node.Update('M', 2), ActorRef.noSender());
+
+        wait.wait(2000);
+
+        for (ActorRef peer: group) {
+            peer.tell(new Node.PrintData(), ActorRef.noSender());
+        }
+
+        wait.wait(5000);
+
+        group.add(system.actorOf(Node.props(id), "node" + id));
+        group.get(1).tell(new Node.JoinSys(group.get(2),id), ActorRef.noSender()); // get(1) to keep it in the test list
+//        id++;
 
         wait.wait(2000);
 
         group.get(2).tell(new Node.Update('A', 2), ActorRef.noSender());
 
+
+        wait.wait(2000);
+
+        group.get(0).tell(new Node.Get('A'), ActorRef.noSender());
 
         //------------------TESTING------------------
 
@@ -62,7 +79,6 @@ public class Main {
         for (ActorRef peer: group) {
             peer.tell(new Node.PrintData(), ActorRef.noSender());
         }
-        System.out.println((int)'Z');
 
         system.terminate();
     }

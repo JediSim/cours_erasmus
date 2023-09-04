@@ -78,6 +78,18 @@ public class Node extends AbstractActor {
         }
     }
 
+    public static class Get implements Serializable {
+        private final Pair dataSearch;
+
+        public Get(Character key) { this.dataSearch = new Pair(key,0); }
+    }
+
+    public static class GetReplica implements Serializable {
+        private final Pair dataSearch;
+
+        public GetReplica(Pair pair) { this.dataSearch = pair; }
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -86,6 +98,8 @@ public class Node extends AbstractActor {
                 .match(UpdateMemberList.class, this::onUpdateMemberList)
                 .match(Update.class, this::onUpdate)
                 .match(UpdateReplica.class, this::onUpdateReplica)
+                .match(Get.class, this::onGet)
+                .match(GetReplica.class, this::onGetReplica)
                 .match(PrintGroup.class, this::onPrintGroup)
                 .match(PrintData.class, this::onPrintData)
                 .build();
@@ -108,12 +122,17 @@ public class Node extends AbstractActor {
 //        System.out.println("id : " + msg.id + " newMember: " + msg.node);
         if (this.group.contains(msg.node)) {
 //            System.out.println("Node " + msg.id + " already in the system");
+            this.updateOnJoin();
             return;
         }
         this.group.add(msg.node);
 //        System.out.println("Node " + this.id + " group: " + this.group);
+        this.updateOnJoin();
+
 
     }
+
+
 
     public void onUpdateMemberList(UpdateMemberList msg) {
 //        this.group = msg.group;
@@ -128,8 +147,8 @@ public class Node extends AbstractActor {
     private void onUpdate(Update msg) {
         Double i = (26.0/this.group.size()*this.id) + 65;
         Double j = (26.0/this.group.size()*(this.id+1) + 65);
-        System.out.println("Node " + this.id + " received update request for key " + msg.newData.getKey() + " i : " + i + " j : " + j);
-        List<ActorRef> nNext = this.getNNext();
+//        System.out.println("Node " + this.id + " received update request for key " + msg.newData.getKey() + " i : " + i + " j : " + j);
+        List<ActorRef> nNext = this.getNNext(this.id);
         if ((int)msg.newData.getKey() >= i && (int)msg.newData.getKey() < j) {
             if (this.data.contains(msg.newData)) {
                 this.data.set(this.data.indexOf(msg.newData), msg.newData);
@@ -152,7 +171,18 @@ public class Node extends AbstractActor {
         }
     }
 
-    private List<ActorRef> getNNext() {
+    private void onGet(Get msg) {
+        List<ActorRef> nNode = getNode(msg.dataSearch.getKey());
+        for (ActorRef node : nNode) {
+            node.tell(new GetReplica(msg.dataSearch), ActorRef.noSender());
+        }
+    }
+
+    private void onGetReplica(GetReplica msg) {
+        System.out.println("get : " + this.data.get(this.data.indexOf(msg.dataSearch)));
+    }
+
+    private List<ActorRef> getNNext(Integer id) {
         List<ActorRef> nNext = new ArrayList<>();
         Integer i = 1;
         Integer n = this.group.size();
@@ -160,7 +190,7 @@ public class Node extends AbstractActor {
         Pattern p;
         Matcher m;
         for (ActorRef node : this.group) {
-            j = (this.id + i) % n;
+            j = (id + i) % n;
             p = Pattern.compile(".*node"+j+".*");
             m = p.matcher(node.toString());
             if (m.find()){
@@ -172,6 +202,33 @@ public class Node extends AbstractActor {
             }
         }
         return nNext;
+    }
+
+    private List<ActorRef> getNode(Character key) {
+        List<ActorRef> nNode = new ArrayList<>();
+        Double i;
+        Double j;
+        String id;
+        for (ActorRef node : this.group) {
+            id = node.toString().split("#")[0];
+            id = id.split("node")[1];
+            i = (26.0/this.group.size()*Integer.parseInt(id)) + 65;
+            j = (26.0/this.group.size()*(Integer.parseInt(id)+1) + 65);
+            if ((int)key >= i && (int)key < j){
+                nNode.add(node);
+                nNode.addAll(getNNext(Integer.parseInt(id)));
+            }
+        }
+        return nNode;
+    }
+
+    private void updateOnJoin(){
+        List<Pair> tmpData = List.copyOf(this.data);
+        this.data.clear();
+
+        for (Pair data : tmpData) {
+            onUpdate(new Update(data.getKey(), data.getValue()));
+        }
     }
 
     //----------------------------------------------------------testing----------------------------------------------------------
