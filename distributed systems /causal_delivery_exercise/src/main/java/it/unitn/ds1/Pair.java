@@ -5,9 +5,16 @@ public class Pair {
     private final Character key;
     private Integer value;
 
-    public Pair(Character key, Integer value) {
-        this.key = key;
+    private Integer version;
+
+    public Pair(Character key, Integer value, Integer version) {
+        this.version = version;
         this.value = value;
+        this.key = key;
+    }
+
+    public Pair(Character key, Integer value) {
+        this(key, value, 1);
     }
 
     public Character getKey() {
@@ -18,13 +25,18 @@ public class Pair {
         return value;
     }
 
+    public Integer getVersion() { return this.version; }
+
     public void setValue(Integer value) {
         this.value = value;
+        this.version++;
     }
+
+//    public void setVersion(Integer version) { this.version = version; }
 
     @Override
     public String toString() {
-        return "(" + key + ", " + value + ")";
+        return "(" + key + ", " + value + ", V" + this.version + ")";
     }
 
     @Override

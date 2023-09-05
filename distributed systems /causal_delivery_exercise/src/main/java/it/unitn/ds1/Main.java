@@ -20,12 +20,20 @@ public class Main {
         List<ActorRef> group = new ArrayList<>();
         int id = 0;
 
+//        tmpNode = new Node(id);
+//        tmpRef = system.actorOf(Node.props(tmpNode), "node" + id);
+//        tmpNode.setSelfRef(tmpRef);
+//        group.add(tmpRef);
         group.add(system.actorOf(Node.props(id), "node" + id));
         group.get(0).tell(new Node.JoinSys(group.get(0),id), ActorRef.noSender());
         id++;
 
         wait.wait(2000);
 
+//        tmpNode = new Node(id);
+//        tmpRef = system.actorOf(Node.props(tmpNode), "node" + id);
+//        tmpNode.setSelfRef(tmpRef);
+//        group.add(tmpRef);
         group.add(system.actorOf(Node.props(id), "node" + id));
         group.get(0).tell(new Node.JoinSys(group.get(1),id), ActorRef.noSender()); // get(1) to keep it in the test list
         id++;
@@ -53,18 +61,44 @@ public class Main {
 
         wait.wait(5000);
 
+//        tmpNode = new Node(id);
+//        tmpRef = system.actorOf(Node.props(tmpNode), "node" + id);
+//        tmpNode.setSelfRef(tmpRef);
+//        group.add(tmpRef);
         group.add(system.actorOf(Node.props(id), "node" + id));
         group.get(1).tell(new Node.JoinSys(group.get(2),id), ActorRef.noSender()); // get(1) to keep it in the test list
 //        id++;
 
         wait.wait(2000);
+//
+//        for (ActorRef peer: group) {
+//            peer.tell(new Node.PrintGroup(), ActorRef.noSender());
+//        }
+//
+//        wait.wait(2000);
 
-        group.get(2).tell(new Node.Update('A', 2), ActorRef.noSender());
-
+        for (ActorRef peer: group) {
+            peer.tell(new Node.PrintData(), ActorRef.noSender());
+        }
 
         wait.wait(2000);
 
+//        group.get(1).tell(new Node.LeaveSys(group.get(1)), ActorRef.noSender());
+//        system.stop(group.get(1));
+//        group.remove(group.get(1));
+//
+//        wait.wait(2000);
+
+
+//
+        group.get(1).tell(new Node.Update('A', 2), ActorRef.noSender());
+//
+//
+        wait.wait(2000);
+//
         group.get(0).tell(new Node.Get('A'), ActorRef.noSender());
+
+        wait.wait(2000);
 
         //------------------TESTING------------------
 
