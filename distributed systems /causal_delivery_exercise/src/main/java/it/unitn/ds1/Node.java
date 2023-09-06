@@ -143,6 +143,11 @@ public class Node extends AbstractActor {
         public GetReplicaRespond(Pair data){ this.data = new Pair(data.getKey(), data.getValue(), data.getVersion()); }
     }
 
+    public static class Recovery implements Serializable {
+
+        public Recovery(){}
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -158,6 +163,7 @@ public class Node extends AbstractActor {
                 .match(Get.class, this::onGet)
                 .match(GetReplica.class, this::onGetReplica)
                 .match(GetReplicaRespond.class, this::onGetReplicaRespond)
+                .match(Recovery.class, this::onRecovery)
                 .match(PrintGroup.class, this::onPrintGroup)
                 .match(PrintData.class, this::onPrintData)
                 .build();
@@ -297,7 +303,19 @@ public class Node extends AbstractActor {
                 res = pair;
             }
             System.out.println("result of get : " + res);
+            this.getRespond.clear();
         }
+    }
+
+    private void onRecovery(Recovery msg){
+        ActorRef node = this.group.get(0);
+        Wait wait = new Wait();
+
+        node.tell(new LeaveSys(this.selfRef), ActorRef.noSender());
+
+        wait.wait(2000);
+
+        node.tell(new JoinSys(this.selfRef, this.id), ActorRef.noSender());
     }
 
     private List<ActorRef> getNNext(Integer index) {
